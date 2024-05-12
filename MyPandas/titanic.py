@@ -2,7 +2,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from pandas import DataFrame
 
-TITANIC_FILE_PATH = "Resources/TitanicBase.csv"
+TITANIC_FILE_PATH = "Resources/Titanic.csv"
 
 
 def draw_histogram(data_frame: DataFrame, col_name):
@@ -40,11 +40,14 @@ if __name__ == '__main__':
     print("Сводная статистическая информация по БД", titanic.describe(), sep='\n')
 
     line_break('ex_3')
-    titanic.dropna().to_csv("Resources/Titanic.csv")
+    # del titanic["Cabin"]
+    titanic_not_empty = titanic.dropna()
+    print(titanic_not_empty.info())
+    titanic_not_empty.to_csv("Resources/TitanicNotEmpty.csv")
     titanic.dropna().to_excel("Resources/TitanicExel.xlsx", sheet_name="passengers", index=False)
 
     line_break('ex_4')
-    titanic = pd.read_csv("Resources/Titanic.csv", index_col='PassengerId')
+    titanic = pd.read_csv(TITANIC_FILE_PATH, index_col='PassengerId')
     print(titanic.info())
 
     line_break('ex_5')
