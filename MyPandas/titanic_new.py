@@ -2,8 +2,6 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from pandas import DataFrame
 
-TITANIC_FILE_PATH = "Titanic.csv"
-
 
 def draw_histogram(data_frame: DataFrame, col_name):
     histogram = data_frame[col_name].plot.hist(color='red')
@@ -13,32 +11,19 @@ def draw_histogram(data_frame: DataFrame, col_name):
     plt.show()
 
 
-def rename_column_by_index(df_columns: list, index: int, new_name: str):
-    df_columns[index] = new_name
-    return df_columns
-
-
-def rename_column_by_name(df_columns: list, old_name: str, new_name: str):
-    return [new_name if column == old_name else column for column in df_columns]
-
-
 def line_break(ex_name: str):
     print(f'\n{ex_name}')
     print("-" * 80)
 
 
-def add_column_female(column: str):
-    return column.replace("female", "1").replace("male", "0")
-
-
 if __name__ == '__main__':
     line_break('ex_1')
-    titanic_base = pd.read_csv(TITANIC_FILE_PATH)
+    titanic_base = pd.read_csv("Titanic.csv")
     print(titanic_base.info())
     print(titanic_base.head(2))
 
     line_break('ex_2')
-    titanic = pd.read_csv(TITANIC_FILE_PATH, index_col='PassengerId')
+    titanic = pd.read_csv("Titanic.csv", index_col='PassengerId')
     print(titanic.info())
     print(titanic.head(2))
     print("Сводная статистическая информация по БД", titanic.describe(), sep='\n')
@@ -47,10 +32,9 @@ if __name__ == '__main__':
     titanic_not_empty = titanic.dropna()
     print(titanic_not_empty.info())
     titanic_not_empty.to_csv("TitanicNotEmpty.csv")
-    titanic.dropna().to_excel("TitanicExel.xlsx", sheet_name="passengers", index=False)
 
     line_break('ex_4')
-    titanic = pd.read_csv(TITANIC_FILE_PATH, index_col='PassengerId')
+    titanic = pd.read_csv("Titanic.csv", index_col='PassengerId')
     print(titanic.info())
 
     line_break('ex_5')
@@ -70,15 +54,13 @@ if __name__ == '__main__':
 
     line_break('ex_9')
     """ Переименуйте столбец с классом пассажира из Pclass в Class. """
-    # titanic.columns = rename_column_by_index(columns, 1, "Class")
-    # print(list(titanic.columns))
-    titanic.columns = rename_column_by_name(columns, "Pclass", "Class")
+    titanic = titanic.rename(columns={"Pclass": "Class"})
     print(f"Названия столбцов в базе данных", list(titanic.columns), sep='\n')
 
     line_break('ex_10')
     """ Выберите из базы данных все строки, которые соответствуют пассажирам женского пола,
     и сохраните их в новую базу female. """
-    titanic = pd.read_csv(TITANIC_FILE_PATH, index_col='PassengerId')
+    titanic = pd.read_csv("Titanic.csv", index_col='PassengerId')
     titanic = titanic.rename(columns={"Pclass": "Class"})
 
     female = titanic[(titanic["Sex"] == 'female')]
@@ -93,7 +75,6 @@ if __name__ == '__main__':
                      & (titanic["Sex"] == 'male')
                      & (titanic["Age"] < 32)]
     y_male.to_csv("YmaleSurvived.csv")
-    y_male.to_excel("YmaleSurvived.xlsx", sheet_name="yang_male", index=False)
     print(y_male.shape)
     print(y_male.head(3))
 
@@ -116,8 +97,6 @@ if __name__ == '__main__':
     Добавьте в дата фрейм столбец Female, состоящий из значений 0 и 1, где 1 соответствует пассажирам женского пола
     """
     titanic["Female"] = titanic["Sex"].replace({"female": "1", "male": "0"})
-    # titanic["Female"] = add_column_female(titanic["Sex"].str)
-    # titanic.insert(11, "Female", add_column_female(titanic["Sex"].str))
     print(titanic.info())
     print(titanic.head())
     titanic.to_excel("TitanicExel.xlsx", sheet_name="passengers", index=False)
@@ -129,23 +108,22 @@ if __name__ == '__main__':
 
     line_break('ex16')
     quantitative = titanic[["Survived", "Class", "Age", "Fare"]]
-    """ Сгруппируйте строки в датафрейме в соответствии со значениями переменной Survived и выведите средние значения 
+    """ Сгруппируйте строки в дата фрейме в соответствии со значениями переменной Survived и выведите средние значения 
     всех количественных переменных по группам."""
     print(quantitative.groupby("Survived").agg('mean'))
 
     line_break('ex17')
-    """Сгруппируйте строки в датафрейме в соответствии со значениями переменной Sex и сохраните в отдельный датафрейм 
+    """Сгруппируйте строки в дата фрейме в соответствии со значениями переменной Sex и сохраните в отдельный датафрейм 
     таблицу со средними и медианными значениями переменной Age по группам(мужчины и женщины)."""
     quantitative = titanic[["Sex", "Age"]].dropna()
     group_by_sex = quantitative.groupby("Sex").agg(['mean', 'median'])
     print(group_by_sex)
 
     line_break('ex_18')
-    """ Приведите все названия столбцов в датафрейме к нижнему регистру и сохраните изменения """
+    """ Приведите все названия столбцов в дата фрейме к нижнему регистру и сохраните изменения """
     titanic = titanic.rename(columns=str.lower)
     print(list(titanic.columns))
 
     line_break('ex_19')
     """ Выгрузите итоговый датафрейм в файл Titanic-new.csv """
     titanic.to_csv("Titanic-new.csv")
-    titanic.to_excel("Titanic-new.xlsx", sheet_name="passengers", index=False)
